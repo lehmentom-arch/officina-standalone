@@ -1800,14 +1800,17 @@ async function viewCompany(){
           ${photos.map(u=>`<img src="${u}" style="width:70px;height:70px;object-fit:cover;border-radius:8px;">`).join("")}
         </div>
       </div>
-      <div class="field">Gutschein-Code (optional)<input id="c-promo" placeholder="z. B. WILLKOMMEN5">
+      <div class="field">Gutschein-Code (optional)
+        <div style="display:flex;gap:8px;">
+          <input id="c-promo" placeholder="z. B. WILLKOMMEN5" style="flex:1;">
+          <button type="button" class="btn-ghost" style="flex-shrink:0;padding:11px 18px;" onclick="redeemPromoCode('${comp?.id||""}')">Einlösen</button>
+        </div>
         <div id="promo-status" style="margin-top:6px;"></div>
         ${comp?.free_posts_remaining ? `<div style="font-size:12.5px;color:var(--amber-dark);margin-top:4px;font-weight:700;">${comp.free_posts_remaining} kostenlose Inserate verfügbar</div>` : ""}
       </div>
       <div id="c-status"></div>
       <button class="btn-primary" style="width:100%;" onclick="saveCompany('${comp?.id||""}')">Speichern</button>
   `, 520));
-  document.getElementById("c-promo")?.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); redeemPromoCode(comp?.id); } });
 }
 function checkUidFormat(){
   const val = document.getElementById("c-uid").value.trim();
@@ -1817,14 +1820,14 @@ function checkUidFormat(){
   hint.textContent = ok ? "✓ Format sieht korrekt aus." : "Format sollte CHE-123.456.789 sein.";
   hint.style.color = ok ? "#1E7A4C" : "var(--danger)";
 }
-async function redeemPromoCode(companyId){
+async function redeemPromoCodeCore(companyId, codeInputId, statusElId, onSuccess){
   if (!companyId) { alert("Bitte zuerst das Firmenprofil einmal speichern, dann den Code einlösen."); return; }
-  const code = document.getElementById("c-promo").value.trim().toUpperCase();
-  const statusEl = document.getElementById("promo-status");
+  const code = document.getElementById(codeInputId).value.trim().toUpperCase();
+  const statusEl = document.getElementById(statusElId);
   if (!code) return;
   statusEl.innerHTML = `<span style="font-size:12.5px;color:var(--text2);">Prüfe…</span>`;
   const { data: promo, error } = await sb.from("promo_codes").select("*").eq("code", code).maybeSingle();
-  if (error || !promo) { statusEl.innerHTML = `<span style="font-size:12.5px;color:var(--danger);">Code ungültig.</span>`; return; }
+  if (error || !promo) { statusEl.innerHTML = `<span style="font-size:12.5px;color:var(--danger);">Code ungültig — ist er bei dir schon in Supabase angelegt?</span>`; return; }
   if (!promo.active) { statusEl.innerHTML = `<span style="font-size:12.5px;color:var(--danger);">Dieser Code ist nicht mehr aktiv.</span>`; return; }
   if (promo.max_redemptions != null && promo.redeemed_count >= promo.max_redemptions) {
     statusEl.innerHTML = `<span style="font-size:12.5px;color:var(--danger);">Dieser Code wurde bereits zu oft eingelöst.</span>`; return;
@@ -1839,6 +1842,13 @@ async function redeemPromoCode(companyId){
   await sb.from("promo_redemptions").insert({ code, company_id: companyId });
   await sb.from("promo_codes").update({ redeemed_count: (promo.redeemed_count||0) + 1 }).eq("code", code);
   statusEl.innerHTML = `<span style="font-size:12.5px;color:#1E7A4C;font-weight:700;">✓ ${promo.free_posts} kostenlose Inserate freigeschaltet!</span>`;
+  if (onSuccess) setTimeout(onSuccess, 900);
+}
+async function redeemPromoCode(companyId){
+  await redeemPromoCodeCore(companyId, "c-promo", "promo-status");
+}
+async function redeemPromoCodeOnPayment(companyId){
+  await redeemPromoCodeCore(companyId, "jp-promo", "jp-promo-status", () => viewJobPayment());
 }
 async function saveCompany(existingId){
   const statusEl = document.getElementById("c-status");
@@ -2040,6 +2050,13 @@ async function viewJobPayment(){
             <span style="font-weight:800;font-size:18.5px;">CHF ${t.price}</span>
           </label>
         `).join("")}
+      </div>
+      <div class="field" style="margin-bottom:18px;">Gutschein-Code
+        <div style="display:flex;gap:8px;">
+          <input id="jp-promo" placeholder="z. B. WILLKOMMEN5" style="flex:1;">
+          <button type="button" class="btn-ghost" style="flex-shrink:0;padding:11px 18px;" onclick="redeemPromoCodeOnPayment('${j.companyId}')">Einlösen</button>
+        </div>
+        <div id="jp-promo-status" style="margin-top:6px;"></div>
       </div>
       <div id="jp-status"></div>
       <button class="btn-primary" id="jp-pay-btn" style="width:100%;" onclick="startStripeCheckout()">Weiter zu Stripe · CHF ${PLAN_TIERS[0].price}</button>
@@ -2593,7 +2610,11 @@ async function viewEmployerDashboard(){
   const activeCount = jobList.filter(j=>j.status==="published").length;
   const totalViews = jobList.reduce((sum,j)=> sum + (j.views||0), 0);
   const totalApps = Object.values(appCounts).reduce((a,b)=>a+b, 0);
-  const currentPlan = invoices[0] ? invoices[0].plan_name : null;
+  const planActive = comp.plan_expires_at && new Date(comp.plan_expires_at) > new Date();
+  const planName = comp.plan_key ? (PLAN_TIERS.find(p=>p.key===comp.plan_key)?.name || comp.plan_key) : null;
+  const remainingLabel = !planActive ? "Kein aktives Abo"
+    : comp.posts_remaining === null ? "Unbegrenzt"
+    : `${comp.posts_remaining} Inserate übrig`;
 
   setApp(`
     <div class="container" style="padding:40px 32px 80px;">
@@ -2605,7 +2626,8 @@ async function viewEmployerDashboard(){
         <div class="about-stat"><b>${activeCount}</b><span>aktive Inserate</span></div>
         <div class="about-stat"><b>${totalViews}</b><span>Aufrufe gesamt</span></div>
         <div class="about-stat"><b>${totalApps}</b><span>Bewerbungen gesamt</span></div>
-        <div class="about-stat"><b style="font-size:17.5px;">${currentPlan ? esc(currentPlan) : "Kein Abo"}</b><span>aktuelles Paket</span></div>
+        <div class="about-stat"><b style="font-size:17.5px;">${planName ? esc(planName) : "Kein Abo"}</b><span>aktuelles Paket</span></div>
+        <div class="about-stat"><b style="font-size:17.5px;color:${planActive?'#1E7A4C':'var(--text2)'};">${remainingLabel}</b><span>laut Abo verfügbar</span></div>
       </div>
 
       <div style="display:flex;gap:10px;margin-bottom:32px;flex-wrap:wrap;">
