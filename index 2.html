@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AUREA — Luxury Development Intelligence</title>
+  <meta name="description" content="AI-powered luxury real estate platform for villas, development and investment." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f7f3ec;
+      --bg2:#fbf8f3;
+      --panel:#ffffff;
+      --panel2:#f4efe7;
+      --text:#181512;
+      --muted:#72685d;
+      --line:rgba(34,27,20,.10);
+      --gold:#caa45f;
+      --gold2:#e7cf9f;
+      --shadow:0 18px 60px rgba(57,42,20,.10);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--text);
+      font-family:"Manrope",system-ui,sans-serif;
+      background:
+        radial-gradient(circle at 85% 0%, rgba(231,207,159,.30), transparent 28%),
+        radial-gradient(circle at 0% 30%, rgba(202,164,95,.08), transparent 22%),
+        linear-gradient(180deg,#fcfaf7,#f7f3ec 55%,#faf7f1);
+    }
+    a{text-decoration:none;color:inherit}
+    button,input{font:inherit}
+    .container{width:min(1180px,calc(100% - 42px));margin:auto}
+    nav{
+      position:fixed;inset:0 0 auto 0;z-index:30;
+      background:rgba(252,249,244,.82);
+      backdrop-filter:blur(18px);
+      border-bottom:1px solid rgba(34,27,20,.06);
+    }
+    .nav-inner{
+      height:78px;display:flex;align-items:center;justify-content:space-between;gap:24px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.14em;
+    }
+    .brand-mark{
+      width:38px;height:38px;border-radius:12px;
+      background:linear-gradient(135deg,var(--gold2),var(--gold));
+      color:#fff;display:grid;place-items:center;
+      box-shadow:0 10px 30px rgba(202,164,95,.35);
+      font-family:"Cormorant Garamond",serif;
+      font-size:22px;font-weight:700;
+    }
+    .nav-links{display:flex;gap:28px;font-size:14px;color:#5f5549}
+    .nav-actions{display:flex;gap:10px}
+    .btn{
+      border:1px solid var(--line);
+      background:#fff;color:var(--text);
+      border-radius:999px;padding:12px 18px;cursor:pointer;
+      transition:.25s;
+    }
+    .btn:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(0,0,0,.06)}
+    .btn.gold{
+      border:none;
+      color:#fff;
+      background:linear-gradient(135deg,#d4b06b,#b98c43);
+      font-weight:700;
+      box-shadow:0 12px 30px rgba(185,140,67,.25);
+    }
+    .hero{
+      min-height:100vh;padding:145px 0 90px;display:grid;align-items:center;
+    }
+    .hero-grid{
+      display:grid;grid-template-columns:1.02fr .98fr;gap:44px;align-items:center;
+    }
+    .eyebrow{
+      display:inline-block;
+      color:#9a7a41;
+      background:rgba(202,164,95,.10);
+      border:1px solid rgba(202,164,95,.18);
+      padding:8px 12px;border-radius:999px;
+      font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;
+    }
+    h1,h2,h3{margin:0;font-family:"Cormorant Garamond",serif}
+    h1{
+      font-size:clamp(56px,7vw,100px);
+      line-height:.92;
+      letter-spacing:-.04em;
+      margin:22px 0 22px;
+    }
+    .hero p{
+      max-width:650px;
+      color:var(--muted);
+      font-size:18px;
+      line-height:1.75;
+    }
+    .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+    .proof{
+      display:flex;gap:34px;flex-wrap:wrap;margin-top:38px;
+    }
+    .proof strong{display:block;font-size:28px}
+    .proof span{
+      display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:5px;
+    }
+    .visual{
+      height:635px;border-radius:34px;overflow:hidden;position:relative;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.02),rgba(35,26,18,.18)),
+        url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=90') center/cover;
+      box-shadow:var(--shadow);
+    }
+    .floating-card{
+      position:absolute;left:22px;right:22px;bottom:22px;
+      background:rgba(255,255,255,.86);
+      backdrop-filter:blur(16px);
+      border:1px solid rgba(255,255,255,.7);
+      border-radius:24px;
+      padding:22px;
+      box-shadow:0 22px 55px rgba(58,43,26,.13);
+    }
+    .floating-top{
+      display:flex;justify-content:space-between;gap:12px;align-items:flex-start;
+    }
+    .score{
+      background:#f4e5c2;color:#7a5a1a;
+      padding:8px 10px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.08em;
+    }
+    .floating-card h3{font-size:30px}
+    .sub{color:#7a7065;font-size:14px;margin-top:4px}
+    .metrics{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px;
+    }
+    .metric{
+      background:#fbf8f3;
+      border:1px solid rgba(34,27,20,.06);
+      border-radius:16px;padding:14px;
+    }
+    .metric small{display:block;color:#8f8477;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+    .metric strong{display:block;font-size:16px;margin-top:5px}
+    section{padding:94px 0}
+    .section-head{
+      display:flex;justify-content:space-between;align-items:end;gap:26px;margin-bottom:34px;
+    }
+    .section-head h2{
+      font-size:clamp(38px,5vw,62px);
+      line-height:.96;max-width:740px;
+    }
+    .section-head p{
+      max-width:470px;color:var(--muted);line-height:1.7;
+    }
+    .cards{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
+    }
+    .property{
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(34,27,20,.07);
+      border-radius:24px;overflow:hidden;
+      box-shadow:0 16px 40px rgba(54,39,22,.06);
+      transition:.25s;
+    }
+    .property:hover{transform:translateY(-5px)}
+    .property-img{
+      height:265px;background-size:cover;background-position:center;position:relative;
+    }
+    .tag{
+      position:absolute;top:16px;left:16px;
+      padding:8px 12px;border-radius:999px;
+      background:rgba(255,255,255,.84);
+      font-size:11px;font-weight:800;letter-spacing:.08em;
+      color:#6d5731;
+    }
+    .property-body{padding:20px}
+    .property h3{font-size:28px}
+    .location{color:var(--muted);font-size:14px;margin:6px 0 18px}
+    .property-data{
+      display:flex;justify-content:space-between;gap:12px;padding-top:16px;border-top:1px solid rgba(34,27,20,.08)
+    }
+    .property-data small{display:block;color:#8a8074;font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+    .property-data strong{display:block;margin-top:4px;font-size:14px}
+    .ai-wrap{
+      display:grid;grid-template-columns:.95fr 1.05fr;gap:18px;
+      background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(248,243,234,.92));
+      border:1px solid rgba(34,27,20,.07);
+      border-radius:30px;padding:24px;
+      box-shadow:0 16px 40px rgba(54,39,22,.05);
+    }
+    .map{
+      min-height:470px;border-radius:22px;overflow:hidden;position:relative;
+      background:
+        linear-gradient(rgba(110,91,51,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(110,91,51,.06) 1px, transparent 1px),
+        radial-gradient(circle at 50% 50%, #f6efe3, #efe6d8 78%);
+      background-size:36px 36px,36px 36px,auto;
+    }
+    .plot{
+      position:absolute;inset:76px 72px 70px 78px;
+      background:rgba(202,164,95,.12);
+      border:2px solid rgba(202,164,95,.7);
+      clip-path:polygon(11% 8%,92% 0,100% 76%,65% 100%,0 82%);
+    }
+    .building{
+      position:absolute;left:35%;top:31%;width:31%;height:35%;
+      background:linear-gradient(150deg,rgba(255,255,255,.92),rgba(231,207,159,.55));
+      border:1px solid rgba(202,164,95,.5);
+      box-shadow:0 20px 35px rgba(163,129,70,.18);
+      transform:skewY(-5deg);
+    }
+    .map-badge{
+      position:absolute;background:#fff;border:1px solid rgba(34,27,20,.08);
+      border-radius:14px;padding:10px 12px;font-size:11px;color:#5e5245;
+      box-shadow:0 10px 24px rgba(0,0,0,.06);
+    }
+    .b1{top:20px;left:20px}
+    .b2{bottom:20px;right:20px}
+    .analysis{padding:12px}
+    .analysis h3{font-size:40px;margin:12px 0 10px}
+    .analysis p{color:var(--muted);line-height:1.7}
+    .inputbar{
+      display:flex;gap:8px;padding:8px;background:#fff;border:1px solid rgba(34,27,20,.08);
+      border-radius:18px;margin:22px 0;box-shadow:0 10px 28px rgba(57,42,20,.05);
+    }
+    .inputbar input{
+      flex:1;min-width:0;border:0;outline:none;background:transparent;padding:12px 12px;color:var(--text);
+    }
+    .result-list{display:grid;gap:10px}
+    .result{
+      display:flex;justify-content:space-between;gap:10px;
+      padding:14px 15px;border-radius:16px;background:#fff;border:1px solid rgba(34,27,20,.07)
+    }
+    .result span{color:var(--muted)}
+    .market-grid{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+    }
+    .market-card{
+      min-height:196px;padding:22px;border-radius:22px;background:#fff;border:1px solid rgba(34,27,20,.07);
+      box-shadow:0 16px 40px rgba(54,39,22,.05);
+      display:flex;flex-direction:column;justify-content:space-between;
+    }
+    .icon{
+      width:50px;height:50px;border-radius:14px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,#f5ead2,#ead4a8);
+      color:#7d5f27;font-size:24px;font-weight:700;
+    }
+    .market-card h3{
+      font-family:"Manrope",sans-serif;font-size:17px;margin:14px 0 10px;
+    }
+    .market-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+    .cta{
+      text-align:center;padding:82px 22px;border-radius:34px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(231,207,159,.42), transparent 38%),
+        linear-gradient(180deg,#fff,#f7f2ea);
+      border:1px solid rgba(34,27,20,.07);
+      box-shadow:0 18px 50px rgba(54,39,22,.06);
+    }
+    .cta h2{
+      font-size:clamp(42px,5vw,68px);max-width:850px;margin:16px auto 18px;line-height:.98;
+    }
+    .cta p{
+      color:var(--muted);max-width:660px;margin:0 auto 28px;line-height:1.7;
+    }
+    footer{
+      padding:38px 0 48px;border-top:1px solid rgba(34,27,20,.07);
+      color:#7f7366;font-size:13px;
+    }
+    .footer-inner{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    .modal{
+      position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:60;
+      background:rgba(45,33,17,.28);backdrop-filter:blur(8px);padding:22px;
+    }
+    .modal.open{display:flex}
+    .modal-card{
+      width:min(720px,100%);background:#fff;border:1px solid rgba(34,27,20,.08);border-radius:28px;
+      padding:28px;box-shadow:0 24px 70px rgba(44,31,14,.16);
+    }
+    .modal-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .close{
+      width:40px;height:40px;border-radius:50%;border:0;background:#f3eee7;cursor:pointer;font-size:18px;
+    }
+    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}
+    .step{
+      padding:15px;border-radius:15px;border:1px solid rgba(34,27,20,.07);
+      background:#faf7f2;color:#7a6f62;font-size:13px;
+    }
+    .step.active{background:#fff8ea;border-color:rgba(202,164,95,.35);color:#5f4720}
+    .progress{
+      height:8px;background:#eee5d7;border-radius:999px;overflow:hidden;
+    }
+    .progress div{
+      width:0;height:100%;background:linear-gradient(90deg,#d4b06b,#f0dbb3);transition:1.5s;
+    }
+    @media(max-width:920px){
+      .nav-links{display:none}
+      .hero-grid,.ai-wrap{grid-template-columns:1fr}
+      .cards{grid-template-columns:1fr 1fr}
+      .market-grid{grid-template-columns:1fr 1fr}
+      .visual{height:540px}
+    }
+    @media(max-width:620px){
+      .container{width:min(100% - 28px,1180px)}
+      .cards,.market-grid{grid-template-columns:1fr}
+      .hero{padding-top:118px}
+      .section-head{display:block}
+      .section-head p{margin-top:16px}
+      .metrics{grid-template-columns:1fr}
+      .steps{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="container nav-inner">
+      <a class="brand" href="#"><div class="brand-mark">A</div>AUREA</a>
+      <div class="nav-links">
+        <a href="#villas">Villen</a>
+        <a href="#analysis">Analyse</a>
+        <a href="#market">Marketplace</a>
+        <a href="#invest">Invest</a>
+      </div>
+      <div class="nav-actions">
+        <button class="btn">Login</button>
+        <button class="btn gold" onclick="openAnalysis()">Projekt starten</button>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">Luxury Development Platform</div>
+          <h1>Elegante Immobilien.<br>Intelligenter entwickelt.</h1>
+          <p>AUREA ist eine moderne Premium-Plattform für luxuriöse Villen, exklusive Grundstücke und datenbasierte Entwicklungschancen. Hell, hochwertig und gebaut für anspruchsvolle Projekte.</p>
+          <div class="hero-cta">
+            <button class="btn gold" onclick="openAnalysis()">Grundstück analysieren</button>
+            <a href="#villas" class="btn">Luxury Listings ansehen</a>
+          </div>
+          <div class="proof">
+            <div><strong>€ 2.4B+</strong><span>analysiertes Volumen</span></div>
+            <div><strong>1,280+</strong><span>Premium Opportunities</span></div>
+            <div><strong>17.8%</strong><span>Ø Zielrendite</span></div>
+          </div>
+        </div>
+        <div class="visual">
+          <div class="floating-card">
+            <div class="floating-top">
+              <div>
+                <div class="eyebrow">Featured Estate</div>
+                <h3>Villa Aurelia — Lake Zürich</h3>
+                <div class="sub">Ultra-premium Development Opportunity</div>
+              </div>
+              <div class="score">AI SCORE 94</div>
+            </div>
+            <div class="metrics">
+              <div class="metric"><small>Projektwert</small><strong>CHF 18.4M</strong></div>
+              <div class="metric"><small>Wohnfläche</small><strong>1,240 m²</strong></div>
+              <div class="metric"><small>Potenzial</small><strong>+23.6%</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="villas">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Curated luxury</div>
+            <h2>Schöner. Heller. Noch exklusiver.</h2>
+          </div>
+          <p>Eine elegante Auswahl an Villen, Off-Market-Projekten und Development Opportunities — mit modernem Luxus-Look und klarer Premium-Inszenierung.</p>
+        </div>
+        <div class="cards">
+          <article class="property">
+            <div class="property-img" style="background-image:url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=85')"><span class="tag">OFF MARKET</span></div>
+            <div class="property-body">
+              <h3>Villa Serenità</h3>
+              <div class="location">Lugano · Schweiz</div>
+              <div class="property-data">
+                <div><small>Preis</small><strong>CHF 12.8M</strong></div>
+                <div><small>Fläche</small><strong>980 m²</strong></div>
+                <div><small>AI Score</small><strong>91 / 100</strong></div>
+              </div>
+            </div>
+          </article>
+          <article class="property">
+            <div class="property-img" style="background-image:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85')"><span class="tag">DEVELOPMENT</span></div>
+            <div class="property-body">
+              <h3>Casa Nocturne</h3>
+              <div class="location">Mallorca · Spanien</div>
+              <div class="property-data">
+                <div><small>Projektwert</small><strong>€ 9.6M</strong></div>
+                <div><small>Fläche</small><strong>760 m²</strong></div>
+                <div><small>Potenzial</small><strong>+21%</strong></div>
+              </div>
+            </div>
+          </article>
+          <article class="property">
+            <div class="property-img" style="background-image:url('https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=85')"><span class="tag">SIGNATURE</span></div>
+            <div class="property-body">
+              <h3>Maison Élan</h3>
+              <div class="location">Côte d’Azur · Frankreich</div>
+              <div class="property-data">
+                <div><small>Preis</small><strong>€ 15.2M</strong></div>
+                <div><small>Fläche</small><strong>1,110 m²</strong></div>
+                <div><small>AI Score</small><strong>96 / 100</strong></div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="analysis">
+      <div class="container">
+        <div class="section-head">
+          <div><div class="eyebrow">AUREA Intelligence</div><h2>Eine Adresse. Ein Premium-Investment-Memo.</h2></div>
+          <p>Baurecht, Flächenpotenzial, Kostenmodell und Renditechance – übersichtlich dargestellt in einem hellen, modernen Dashboard.</p>
+        </div>
+        <div class="ai-wrap">
+          <div class="map">
+            <div class="plot"></div>
+            <div class="building"></div>
+            <div class="map-badge b1">PARZELLE 4872 · 1,840 m²</div>
+            <div class="map-badge b2">Potenzial erkannt: +420 m²</div>
+          </div>
+          <div class="analysis">
+            <div class="eyebrow">AI Feasibility Engine</div>
+            <h3>Was kann hier entstehen?</h3>
+            <p>Gib eine Adresse ein. Die Demo simuliert die Analyse und zeigt, wie sich die Plattform als echtes Luxusprodukt anfühlen könnte.</p>
+            <div class="inputbar">
+              <input id="address" placeholder="z. B. Küsnacht, Zürich, Schweiz">
+              <button class="btn gold" onclick="runDemo()">Analysieren</button>
+            </div>
+            <div class="result-list">
+              <div class="result"><span>Zulässige BGF</span><strong id="r1">—</strong></div>
+              <div class="result"><span>Geschätzte Baukosten</span><strong id="r2">—</strong></div>
+              <div class="result"><span>Prognostizierter Projektwert</span><strong id="r3">—</strong></div>
+              <div class="result"><span>Entwicklungspotenzial</span><strong id="r4">—</strong></div>
+              <div class="result"><span>AUREA Score</span><strong id="r5">—</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="market">
+      <div class="container">
+        <div class="section-head">
+          <div><div class="eyebrow">Integrated marketplace</div><h2>Vom Grundstück bis zur Luxusvilla.</h2></div>
+          <p>Verbinde Eigentümer, Architekten, Investoren und Baupartner in einer stilvollen High-End-Umgebung.</p>
+        </div>
+        <div class="market-grid">
+          <div class="market-card"><div class="icon">◫</div><div><h3>Grundstücke</h3><p>Exklusive Flächen und Off-Market Land mit AI-Ranking und Potenzialbewertung.</p></div></div>
+          <div class="market-card"><div class="icon">⌁</div><div><h3>Architekten</h3><p>Kuratiertes Matching für ikonische Villen, Signature-Design und anspruchsvolle Kunden.</p></div></div>
+          <div class="market-card"><div class="icon">◇</div><div><h3>Investoren</h3><p>Kapitalzugang nach Lage, Risiko, Ticketgröße und Zielrendite.</p></div></div>
+          <div class="market-card"><div class="icon">↗</div><div><h3>Bau & Vergabe</h3><p>Preisvergleich, Ausschreibung und Auswahl hochwertiger Baupartner.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="invest">
+      <div class="container">
+        <div class="cta">
+          <div class="eyebrow">Private Access</div>
+          <h2>Luxus beginnt mit der richtigen Plattform.</h2>
+          <p>Erhalte Zugriff auf kuratierte Entwicklungsmöglichkeiten und starte deine digitale Grundstücksanalyse in einem deutlich helleren, eleganteren Premium-Design.</p>
+          <button class="btn gold" onclick="openAnalysis()">AUREA Access starten</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <div>© 2026 AUREA. Light Luxury Concept.</div>
+      <div>Zürich · Luxury Development Intelligence</div>
+    </div>
+  </footer>
+
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div><div class="eyebrow">AUREA AI</div><h3 style="font-size:34px;margin-top:10px">Neue Projektanalyse</h3></div>
+        <button class="close" onclick="closeModal()">×</button>
+      </div>
+      <p style="color:#72685d">Demo-Workflow: Standort → Potenzial → Investment.</p>
+      <div class="steps">
+        <div class="step active">01 · Standort</div>
+        <div class="step">02 · Potenzial</div>
+        <div class="step">03 · Investment</div>
+      </div>
+      <div class="inputbar">
+        <input placeholder="Adresse oder Parzellennummer">
+        <button class="btn gold" onclick="simulate()">Analyse starten</button>
+      </div>
+      <div class="progress"><div id="progress"></div></div>
+      <p id="status" style="color:#72685d;font-size:13px;margin-top:12px">Bereit für die Analyse.</p>
+    </div>
+  </div>
+
+  <script>
+    function openAnalysis(){ document.getElementById('modal').classList.add('open'); }
+    function closeModal(){
+      document.getElementById('modal').classList.remove('open');
+      document.getElementById('progress').style.width='0';
+      document.getElementById('status').textContent='Bereit für die Analyse.';
+    }
+    function simulate(){
+      const p=document.getElementById('progress');
+      const s=document.getElementById('status');
+      p.style.width='100%';
+      s.textContent='Standortdaten, Potenzial und Wirtschaftlichkeit werden simuliert …';
+      setTimeout(()=>{ s.textContent='Analyse abgeschlossen — Potenzialscore 92/100. Nächster Schritt: Premium Investment Memo.'; },1600);
+    }
+    function runDemo(){
+      const a=document.getElementById('address').value.trim();
+      if(!a){document.getElementById('address').focus();return;}
+      document.getElementById('r1').textContent='1,960 m²';
+      document.getElementById('r2').textContent='CHF 8.7M';
+      document.getElementById('r3').textContent='CHF 12.4M';
+      document.getElementById('r4').textContent='+24.8%';
+      document.getElementById('r5').textContent='92 / 100';
+    }
+    window.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+    document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id==='modal') closeModal(); });
+  </script>
+</body>
+</html>
